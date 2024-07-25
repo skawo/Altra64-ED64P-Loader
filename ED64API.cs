@@ -20,6 +20,9 @@ namespace ED64PLoad
         {
             try
             {
+                if (DoingStuff)
+                    return;
+
                 if (Program.port != null)
                 {
                     if (Program.port.IsOpen)
@@ -78,13 +81,21 @@ namespace ED64PLoad
             DoingStuff = false;
         }
 
-        public static bool ED64SendROM(byte[] ROM, BackgroundWorker bw)
+        public static bool ED64SendROM(byte[] LoadedROM, BackgroundWorker bw)
         {
             if (Program.port == null)
                 return false;
 
             DoingStuff = true;
             bool Res = false;
+
+            int RL = LoadedROM.Length;
+
+            while (RL % 0x200 != 0)
+                RL++;
+
+            byte[] ROM = new byte[RL];
+            Array.Copy(LoadedROM, ROM, LoadedROM.Length);
 
             try
             {
@@ -121,6 +132,7 @@ namespace ED64PLoad
                 int BUF_SIZE = Math.Min(ROM.Length, 2 * 0x8000);
                 float StepsNum = ROM.Length / BUF_SIZE;
                 float StepCur = 0;
+                int SizeLeft = ROM.Length;
 
                 for (int i = 0; i < ROM.Length; i+= BUF_SIZE)
                 {
@@ -136,10 +148,14 @@ namespace ED64PLoad
                         Program.port.Write(writeBuf, 0, 512);
                     }
 
+                    if (BUF_SIZE > SizeLeft)
+                        BUF_SIZE = SizeLeft;
+
                     writeBuf = new byte[BUF_SIZE];
                     Array.Copy(ROM, i, writeBuf, 0, BUF_SIZE);
                     Program.port.Write(writeBuf, 0, BUF_SIZE);
                     StepCur++;
+                    SizeLeft -= BUF_SIZE;
 
                     float Progress = (StepCur / StepsNum * 100.0f);
                     bw.ReportProgress( (int)Progress);
@@ -155,7 +171,6 @@ namespace ED64PLoad
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
             }
 
             DoingStuff = false;

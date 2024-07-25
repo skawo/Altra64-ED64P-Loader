@@ -16,7 +16,6 @@ namespace ED64PLoad
         ED64API api;
         BackgroundWorker bw;
         BackgroundWorker bw2;
-        Timer t;
         string ROMFn = "";
         string PortN = "";
 
@@ -34,16 +33,8 @@ namespace ED64PLoad
             bw2.WorkerReportsProgress = true;
             bw2.RunWorkerCompleted += Bw2_RunWorkerCompleted;
 
-            t = new Timer();
-            t.Interval = 200;
-            t.Tick += T_Tick;
-            t.Start();
-        }
-
-        private void T_Tick(object sender, EventArgs e)
-        {
-            if (!bw2.IsBusy && !ED64API.DoingStuff)
-                bw2.RunWorkerAsync();
+            string[] ports = SerialPort.GetPortNames();
+            comboCOMPorts.DataSource = ports;
         }
 
         private void Bw2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -66,7 +57,6 @@ namespace ED64PLoad
 
         private void bw_TryMakePort(object sender, DoWorkEventArgs e)
         {
-
             ED64API.setED64API(PortN);
 
             if (ED64API.ED64TestPort())
@@ -94,6 +84,7 @@ namespace ED64PLoad
             {
                 lblStatusExp.Text = "Sending ROM...";
                 ROMFn = of.FileName;
+
                 bw.RunWorkerAsync();
             }
         }
@@ -106,8 +97,15 @@ namespace ED64PLoad
 
         private void button2_Click(object sender, EventArgs e)
         {
+            string CurPort = comboCOMPorts.Text;
+
             string[] ports = SerialPort.GetPortNames();
             comboCOMPorts.DataSource = ports;
+
+            comboCOMPorts.Text = CurPort;
+
+            if (!bw2.IsBusy && !ED64API.DoingStuff)
+                bw2.RunWorkerAsync();
         }
 
         private void ED64PLoad_Load(object sender, EventArgs e)

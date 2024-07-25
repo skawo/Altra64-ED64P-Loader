@@ -45,7 +45,7 @@ namespace ED64PLoad
             this.comboCOMPorts.FormattingEnabled = true;
             this.comboCOMPorts.Location = new System.Drawing.Point(74, 17);
             this.comboCOMPorts.Name = "comboCOMPorts";
-            this.comboCOMPorts.Size = new System.Drawing.Size(121, 21);
+            this.comboCOMPorts.Size = new System.Drawing.Size(216, 21);
             this.comboCOMPorts.TabIndex = 0;
             this.comboCOMPorts.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -95,7 +95,7 @@ namespace ED64PLoad
             // 
             // btnRefresh
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(201, 17);
+            this.btnRefresh.Location = new System.Drawing.Point(201, 48);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(89, 21);
             this.btnRefresh.TabIndex = 6;
